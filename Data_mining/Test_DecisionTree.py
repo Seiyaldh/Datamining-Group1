@@ -1,5 +1,5 @@
 import unittest
-from DecisionTree_ver4 import addResionLabel
+from DecisionTree import addResionLabel
 from DecisionTree import quartile
 from pandas.util.testing import assert_frame_equal
 import pandas as pd
