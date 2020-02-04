@@ -33,19 +33,19 @@ def quartile(df):
 #地域から"region_label" を追加
 def addResionLabel(df):
     region_label = []
-    for i in range(157):
+    for i in range(len(df)):
         if df.iloc[i]["Region"]=="Western Europe" or df.iloc[i]["Region"]=="Central and Eastern Europe":
-            region_label.append(3)
+            region_label.append("Europe")
         elif df.iloc[i]["Region"]=="North America":
-            region_label.append(4)
+            region_label.append("North America")
         elif df.iloc[i]["Region"]=="Latin America and Caribbean":
-            region_label.append(2)
+            region_label.append("South America")
         elif df.iloc[i]["Region"]=="Australia and New Zealand":
-            region_label.append(5)
+            region_label.append("Oceania")
         elif df.iloc[i]["Region"]=="Sub-Saharan Africa":
-            region_label.append(0)
+            region_label.append("Africa")
         else:
-            region_label.append(1)
+            region_label.append("Asia")
     rl = pd.DataFrame(region_label)
     df["region label"]=rl
     
@@ -55,9 +55,9 @@ def addResionLabel(df):
 df = pd.read_csv("2016.csv")
 df = addResionLabel(df)
 df = quartile(df)
-
 dummy_region = pd.get_dummies(df["region label"])
-X1 = df.iloc[:, 4:15]
+
+X1 = df.iloc[:, df.columns.get_loc("Economy (GDP per Capita)"):df.columns.get_loc("UnenploymentRate")+1]
 X = pd.concat([X1, dummy_region],axis=1)
 y = df["label"]
 clf_result=tree.DecisionTreeClassifier(max_depth=3)
@@ -74,10 +74,9 @@ pre2=clf_result.predict(X_test)
 ac_score2 = metrics.accuracy_score(y_test, pre2)
 print("テストデータ正答率 = ", ac_score2)
 
-"""
 #重要度の可視化
 features = []
-for s in range(17):
+for s in range(len(X.columns)):
     features.append(X.columns[s])
     
 n_features = X.shape[1]
@@ -97,4 +96,3 @@ viz = dtreeviz(
     class_names = ["0","1","2","3"])
     
 viz.view()
-"""
