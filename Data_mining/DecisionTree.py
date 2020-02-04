@@ -30,11 +30,33 @@ def quartile(df):
     
     return df
 
+#地域から"region_label" を追加
+def addResionLabel(df):
+    region_label = []
+    for i in range(157):
+        if df.iloc[i]["Region"]=="Western Europe" or df.iloc[i]["Region"]=="Central and Eastern Europe":
+            region_label.append(3)
+        elif df.iloc[i]["Region"]=="North America":
+            region_label.append(4)
+        elif df.iloc[i]["Region"]=="Latin America and Caribbean":
+            region_label.append(2)
+        elif df.iloc[i]["Region"]=="Australia and New Zealand":
+            region_label.append(5)
+        elif df.iloc[i]["Region"]=="Sub-Saharan Africa":
+            region_label.append(0)
+        else:
+            region_label.append(1)
+    rl = pd.DataFrame(region_label)
+    df["region label"]=rl
+    
+    return df
+
 #機械学習で分類する
 df = pd.read_csv("2016.csv")
+df = addResionLabel(df)
 df = quartile(df)
 
-dummy_region = pd.get_dummies(df["Region"])
+dummy_region = pd.get_dummies(df["region label"])
 X1 = df.iloc[:, 4:15]
 X = pd.concat([X1, dummy_region],axis=1)
 y = df["label"]
@@ -52,9 +74,10 @@ pre2=clf_result.predict(X_test)
 ac_score2 = metrics.accuracy_score(y_test, pre2)
 print("テストデータ正答率 = ", ac_score2)
 
+"""
 #重要度の可視化
 features = []
-for s in range(20):
+for s in range(17):
     features.append(X.columns[s])
     
 n_features = X.shape[1]
@@ -74,3 +97,4 @@ viz = dtreeviz(
     class_names = ["0","1","2","3"])
     
 viz.view()
+"""
